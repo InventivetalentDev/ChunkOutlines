@@ -27,18 +27,34 @@ public class ChunkOutline extends JavaPlugin {
 			 aliases = {
 					 "showchunks"
 			 },
-			 usage = "[duration]",
+			 usage = "[duration] [radius]",
 			 description = "Show the outline of chunks around you",
 			 min = 0,
-			 max = 1,
+			 max = 2,
 			 fallbackPrefix = "chunkoutline")
 	@Permission("chunkoutline.show")
-	public void chunkOutline(final Player sender, @OptionalArg(def = "5") Integer duration) {
-		Chunk chunk = sender.getLocation().getChunk();
-		int highestY = sender.getWorld().getHighestBlockYAt(sender.getLocation().getBlockX(), sender.getLocation().getBlockY());
-		spawnClouds(sender.getWorld(), getChunkBounds(chunk), Math.max(1, Math.min(sender.getLocation().getY() - 16, highestY)), duration);
+	public void chunkOutline(final Player sender, @OptionalArg(def = "5") Integer duration, @OptionalArg(def = "1") Integer radius) {
+		radius = Math.max(1, radius);
+		radius -= 1;
+
+		if (radius == 0) {
+			Chunk chunk = sender.getLocation().getChunk();
+			highlight(sender, chunk, duration);
+		} else {
+			for (int x = -radius; x < radius; x++) {
+				for (int z = -radius; z < radius; z++) {
+					Chunk chunk = sender.getLocation().add(x * 16, 0, z * 16).getChunk();
+					highlight(sender, chunk, duration);
+				}
+			}
+		}
 
 		sender.sendMessage("§eShowing outline of the current chunk for §7" + duration + " seconds§e.");
+	}
+
+	public void highlight(Player sender, Chunk chunk, int duration) {
+		int highestY = sender.getWorld().getHighestBlockYAt(sender.getLocation().getBlockX(), sender.getLocation().getBlockY());
+		spawnClouds(sender.getWorld(), getChunkBounds(chunk), Math.max(1, Math.min(sender.getLocation().getY() - 16, highestY)), duration);
 	}
 
 	public BoundingBox getChunkBounds(Chunk chunk) {
