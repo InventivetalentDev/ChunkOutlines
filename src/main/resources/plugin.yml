@@ -1,0 +1,4 @@
+name: ChunkOutline
+main: org.inventivetalent.chunkoutline.ChunkOutline
+author: inventivetalent
+version: ${project.version}
